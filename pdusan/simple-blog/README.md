@@ -1,5 +1,7 @@
 ##Usage
+
 ###Configuration
+
 1.  set following on application's composer.json
 ```
 "extra": {
@@ -26,7 +28,8 @@
  ],
  ```
  
- ###Publish
+###Publish
+
 1. Publish configration
 ```
 php artisan vendor:publish --tab="sblog-config"
