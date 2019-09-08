@@ -46,7 +46,7 @@ php artisan vendor:publish --tag="sblog-translations"
 ```
 php artisan vendor:publish --tag="sblog-assets"
 ```
-4. Publish migrations
+5. Publish migrations
 ```
 php artisan vendor:publish --tag="sblog-migrations"
 ```
