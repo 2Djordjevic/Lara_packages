@@ -75,7 +75,6 @@ class SBlogPostController extends SBlogBaseController
     public function destroy(Request $request, $id)
     {
         $model = SBlogPost::find($id);
-        $this->authorize('delete', $model);
         $model->delete();
         $request->session()->flash('success', 'Post has been deleted successfully');
         return redirect()->route('sblog.post.index');
