@@ -28,12 +28,43 @@
     <div class="hero-head">
       <nav class="navbar">
         <div class="container">
-          <div class="navbar-brand">
-            <a class="navbar-item" href="{{ route(config('sblog.route_name_prefix') . '.blog.index') }}">Blogs</a>
+          <div class="navbar-start">
+            <div class="navbar-item">
+              <a class="button is-primary" href="{{ route(config('sblog.route_name_prefix') . '.post.index') }}"><strong>Posts</strong></a>
+            </div>
+            @auth
+              <div class="navbar-item">
+                <a class="button is-primary" href="{{ route(config('sblog.route_name_prefix') . '.post.create') }}"><strong>Create New Post</strong></a>
+              </div>
+            @endauth
           </div>
-          <div id="navbarMenuHeroA" class="navbar-menu">
-            <div class="navbar-end">
-              <a class="navbar-item" href="{{ route(config('sblog.route_name_prefix') . '.blog.create') }}">Create New Post</a>
+
+          <div class="navbar-end">
+            <div class="navbar-item">
+              <div class="buttons">
+                @guest
+                  @if (Route::has('register'))
+                    <a class="button is-primary"  href="{{ route('register') }}"><strong>Sign up</strong></a>
+                  @endif
+                  <a class="button is-light"  href="{{ route('login') }}">Log in</a>
+                @else
+                  <div class="button is-primary">
+                    <span class="icon is-large">
+                      <span class="fa-stack fa-md">
+                        <i class="fa fa-user"></i>
+                      </span>
+                    </span>
+                    <p>{{ Auth::user()->name }}</p>
+                  </div>
+
+                  <a class="button is-light" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                    Logout
+                  </a>
+                  <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                  </form>
+                @endguest
+              </div>
             </div>
           </div>
         </div>
@@ -51,7 +82,8 @@
 </body>
 
 <!-- Scripts -->
-<script src="{{ asset('vendor/sblog/js/sblog.js') }}"></script>
+  <script src="https://code.jquery.com/jquery-3.4.1.js" integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous"></script>
+  <script src="{{ asset('vendor/sblog/js/sblog.js') }}"></script>
 <!-- Customize Scripts -->
 @yield('page_js')
 </html>

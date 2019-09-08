@@ -2,10 +2,21 @@
 
 namespace Pdusan\SimpleBlog;
 
+use Gate;
 use Illuminate\Support\ServiceProvider;
+use Pdusan\SimpleBlog\Models\SBlogComment;
+use Pdusan\SimpleBlog\Models\SBlogPost;
+use Pdusan\SimpleBlog\Policies\SBlogPostPolicy;
+use Pdusan\SimpleBlog\Policies\SBlogCommentPolicy;
 
 class SBlogServiceProvider extends ServiceProvider
 {
+
+    protected $policies = [
+        SBlogPost::class => SBlogPostPolicy::class,
+        SBlogComment::class => SBlogCommentPolicy::class,
+    ];
+
     /**
      * Register bindings in the container.
      */
@@ -39,6 +50,15 @@ class SBlogServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
 
         $this->offerPublishing();
+
+        $this->registerPolicies();
+    }
+
+    public function registerPolicies()
+    {
+        foreach ($this->policies as $key => $value) {
+            Gate::policy($key, $value);
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
-##Usage
+## Usage
 
-###Configuration
+### Configuration
 
 1.  set following on application's composer.json
 ```
@@ -28,25 +28,41 @@
  ],
  ```
  
-###Publish
+### Publish
 
 1. Publish configration
 ```
-php artisan vendor:publish --tab="sblog-config"
+php artisan vendor:publish --tag="sblog-config"
 ```
 2. Publish views
 ```
-php artisan vendor:publish --tab="sblog-views"
+php artisan vendor:publish --tag="sblog-views"
 ```
 3. Publish translations
 ```
-php artisan vendor:publish --tab="sblog-translations"
+php artisan vendor:publish --tag="sblog-translations"
 ```
 4. Publish assets
 ```
-php artisan vendor:publish --tab="sblog-assets"
+php artisan vendor:publish --tag="sblog-assets"
 ```
 4. Publish migrations
 ```
-php artisan vendor:publish --tab="sblog-migrations"
+php artisan vendor:publish --tag="sblog-migrations"
+```
+
+### Make auth
+
+```
+php artisan make:auth
+```
+
+### DB Migration
+```
+php artisan migrate
+```
+
+### DB Seeder
+```
+php artisan db:seed --class=Pdusan\SimpleBlog\Seeds\SBlogSeeder
 ```
