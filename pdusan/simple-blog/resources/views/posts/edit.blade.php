@@ -49,7 +49,7 @@
                     @enderror
                 </div>
             </div>
-            <input type="submit" name="commit" value="Create Post" class="btn button is-primary" data-disable-with="Create Post">
+            <input type="submit" name="commit" value="Update Post" class="btn button is-primary" data-disable-with="Update Post">
         </form>
     </div>
 @endsection

@@ -11,13 +11,19 @@ use Pdusan\SimpleBlog\Services\SBlogCategoryService;
 
 class SBlogPostController extends SBlogBaseController
 {
-    public function index()
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware('auth', ['except' => ['show', 'index']]);
+    }
+
+    public function index(SBlogPostRequest $request)
     {
         $posts = SBlogPost::with('user')->paginate($this->per_page);
         return view("{$this->view_prefix}posts.index", ['posts'=>$posts]);
     }
 
-    public function create()
+    public function create(SBlogPostRequest $request)
     {
         $categories = SBlogCategoryService::getAllCategory();
         return view("{$this->view_prefix}posts.create", ['categories'=>$categories]);
@@ -27,10 +33,8 @@ class SBlogPostController extends SBlogBaseController
     {
         $validateMesaages = [];
         $post_model = new SBlogPost();
-        $post_model->title = $request->input("title");
-        $post_model->body = $request->input("body");
-        $post_model->category_id = $request->input("category_id");
-        $post_model->tags = $request->input("tags");
+        $post_model->fill($request->except(['body']));
+        $post_model->body = filter_var($request->input("body"), FILTER_SANITIZE_STRING);
         $post_model->user_id = Auth::user()->id;
         if($post_model->save()) {
             $request->session()->flash('success', 'Post has been created successfully');
@@ -39,44 +43,41 @@ class SBlogPostController extends SBlogBaseController
         return redirect()->back()->withErrors($validateMesaages)->withInput($request->all());
     }
 
-    public function edit($id)
+    public function edit(SBlogPostRequest $request, $id)
     {
-        //$this->authorize('update', SBlogPost::class);
-
         $categories = SBlogCategoryService::getAllCategory();
         $post = SBlogPost::find($id);
         return view("{$this->view_prefix}posts.edit", ['post'=>$post, 'categories'=>$categories]);
     }
 
-    public function update(SBlogPostRequest $request, $id)
+    public function update(SBlogPostRequest $request, SBlogPost $post)
     {
-        //$this->authorize('update', SBlogPost::class);
-
         $validateMesaages = [];
-        $post_model = SBlogPost::find($id);
-        $post_model->title = $request->input("title");
-        $post_model->body = $request->input("body");
-        $post_model->category_id = $request->input("category_id");
-        $post_model->tags = $request->input("tags");
-        if($post_model->save()) {
+        $post->fill($request->except(['body']));
+        $post->body = filter_var($request->input("body"), FILTER_SANITIZE_STRING);
+        $post->user_id = Auth::user()->id;
+        if($post->save()) {
             $request->session()->flash('success', 'Post has been created successfully');
             return redirect()->route('sblog.post.index');
+        } else {
+            return redirect()->back()->withErrors($validateMesaages)->withInput($request->all());
         }
-        return redirect()->back()->withErrors($validateMesaages)->withInput($request->all());
     }
 
-    public function show($id)
+    public function show(SBlogPostRequest $request, $id)
     {
         $categories = SBlogCategoryService::getAllCategory();
         $post = SBlogPost::with('comments')->find($id);
         return view("{$this->view_prefix}posts.show", ['post'=>$post, 'categories'=>$categories]);
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy(SBlogPostRequest $request, SBlogPost $post)
     {
-        $model = SBlogPost::find($id);
-        $model->delete();
-        $request->session()->flash('success', 'Post has been deleted successfully');
+        if ($post->delete()) {
+            $request->session()->flash('success', 'Post has been deleted successfully');
+        } else {
+            $request->session()->flash('fail', 'Some error occurred while deleting Post');
+        }
         return redirect()->route('sblog.post.index');
     }
 }

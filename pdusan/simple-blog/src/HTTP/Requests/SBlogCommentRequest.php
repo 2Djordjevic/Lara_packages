@@ -6,6 +6,9 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Factory;
 
+use Pdusan\SimpleBlog\Models\SBlogPost;
+use Pdusan\SimpleBlog\Models\SBlogComment;
+
 class SBlogCommentRequest extends FormRequest
 {
     protected $action;
@@ -22,7 +25,18 @@ class SBlogCommentRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        if (!empty($this->action)) {
+            switch ($this->action) {
+                case 'sblog.comment.store':
+                    return auth()->check() &&  auth()->user()->can('canCreateComment', SBlogPost::find($this->route('post_id')));
+                case 'sblog.comment.delete':
+                    return auth()->check() &&  auth()->user()->can('delete', SBlogComment::find($this->route('id')));
+                default:
+                    return true;
+            }
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -32,9 +46,13 @@ class SBlogCommentRequest extends FormRequest
      */
     public function rules()
     {
-        $rules['title'] = ['required', 'string', 'max:191'];
-        $rules['body'] = ['required', 'string'];
-        return $rules;
+        if (!empty($this->action) && ($this->action == 'sblog.comment.store' || $this->action == 'sblog.post.update')) {
+            $rules['title'] = ['required', 'string', 'max:191'];
+            $rules['body'] = ['required', 'string'];
+            return $rules;
+        } else {
+            return [];
+        }
     }
 
     public function attributes()

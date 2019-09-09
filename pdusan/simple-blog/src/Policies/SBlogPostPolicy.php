@@ -10,16 +10,6 @@ class SBlogPostPolicy
 {
     use HandlesAuthorization;
 
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
     public function canCreateComment(User $user, SBlogPost $post)
     {
         return  $user->id !== $post->user_id && !$post->comments()->where('user_id', '=', $user->id)->exists();

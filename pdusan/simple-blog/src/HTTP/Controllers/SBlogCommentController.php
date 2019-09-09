@@ -10,6 +10,11 @@ use Pdusan\SimpleBlog\Models\SBlogComment;
 class SBlogCommentController extends SBlogBaseController
 {
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->middleware('auth');
+    }
     public function store(SBlogCommentRequest $request, $post_id)
     {
         $validateMesaages = [];
@@ -25,11 +30,14 @@ class SBlogCommentController extends SBlogBaseController
         return redirect()->back()->withErrors($validateMesaages)->withInput($request->all());
     }
 
-    public function destroy(Request $request, $post_id, $id)
+    public function destroy(SBlogCommentRequest $request, $post_id, $id)
     {
         $model = SBlogComment::find($id);
-        $model->delete();
-        $request->session()->flash('success', 'Comment has been deleted successfully');
+        if ($model->delete()) {
+            $request->session()->flash('success', 'Comment has been deleted successfully');
+        } else {
+            $request->session()->flash('fail', 'Some error occurred while deleting comment');
+        }
         return redirect()->route('sblog.post.show', ['id'=>$post_id]);
     }
 }
